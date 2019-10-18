@@ -51,7 +51,7 @@ public class SendGridNotificationService implements NotificationService {
         }
     }
 
-    @Scheduled(fixedRate = 180000)
+    @Scheduled(fixedRate = 60000)
     public void flush() {
         log.info("Mail service triggered. Apartments in the queue = {}", apartmentsToSend.size());
 
