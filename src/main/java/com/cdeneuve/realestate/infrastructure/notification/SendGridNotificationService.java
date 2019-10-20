@@ -26,12 +26,12 @@ public class SendGridNotificationService implements NotificationService {
 
     private List<Apartment> apartmentsToSend = new LinkedList();
     private LocalDateTime silentTime = LocalDateTime.now().plusMinutes(3);
-    private LocalDateTime nextEmailTime = silentTime.plusMinutes(5);
+    private LocalDateTime lastTimeTriggered = LocalDateTime.now();
     private AtomicInteger counter = new AtomicInteger(0);
 
-    private int emailInterval = 5; // min
-
     private Lock lock = new ReentrantLock();
+    private String key = System.getenv(SENDGRID_API_KEY);
+    private String recipient = System.getenv(RECIPIENT_EMAIL);
 
     @Override
     public void newApartmentCreated(Apartment apartment) {
@@ -51,37 +51,34 @@ public class SendGridNotificationService implements NotificationService {
         }
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 180000)
     public void flush() {
         log.info("Mail service triggered. Apartments in the queue = {}", apartmentsToSend.size());
-
         LocalDateTime now = LocalDateTime.now();
-        if (now.isAfter(nextEmailTime)) {
-            try {
-                if (lock.tryLock(1, TimeUnit.MINUTES)) {
-                    try {
-                        if (now.getDayOfMonth() != this.nextEmailTime.getDayOfMonth()) {
-                            log.warn("The counter has been reset");
-                            this.counter = new AtomicInteger(0);
-                        }
-                        this.nextEmailTime = now.plusMinutes(emailInterval);
-                        List<Apartment> toSend = apartmentsToSend;
-                        apartmentsToSend = new LinkedList();
-                        CompletableFuture.runAsync(() -> this.sendEmail(toSend));
-                    } finally {
-                        lock.unlock();
+        try {
+            if (lock.tryLock(1, TimeUnit.MINUTES)) {
+                try {
+                    if (now.getDayOfMonth() != this.lastTimeTriggered.getDayOfMonth()) {
+                        log.warn("The counter has been reset");
+                        this.counter = new AtomicInteger(0);
                     }
+                    this.lastTimeTriggered = now;
+                    List<Apartment> toSend = apartmentsToSend;
+                    apartmentsToSend = new LinkedList();
+                    CompletableFuture.runAsync(() -> this.sendEmail(toSend));
+                } finally {
+                    lock.unlock();
                 }
-            } catch (InterruptedException e) {
-                log.error("Error while try to get SendGridNotificationService lock", e);
             }
+        } catch (InterruptedException e) {
+            log.error("Error while try to get SendGridNotificationService lock", e);
         }
     }
 
     private void sendEmail(List<Apartment> apartments) {
         if (apartments.size() > 0 && counter.get() < 100) {
             Mail email = createEmail(apartments);
-            SendGrid sg = new SendGrid(System.getenv(SENDGRID_API_KEY));
+            SendGrid sg = new SendGrid(key);
             Request request = new Request();
             try {
                 request.setMethod(Method.POST);
@@ -99,7 +96,7 @@ public class SendGridNotificationService implements NotificationService {
     private Mail createEmail(List<Apartment> apartments) {
         Email from = new Email("real-estate@check.com");
         String subject = "Apartment news: " + apartments.size() + " new apartments added";
-        Email to = new Email(System.getenv(RECIPIENT_EMAIL));
+        Email to = new Email(recipient);
 
         StringBuilder contentBuilder = new StringBuilder();
         apartments.forEach(apartment -> {
@@ -107,19 +104,19 @@ public class SendGridNotificationService implements NotificationService {
                     .append(" [")
                     .append(apartment.getTimestamp().format(DateTimeFormatter.ISO_DATE_TIME))
                     .append("]")
-                    .append("\n")
+                    .append("\n ")
                     .append(apartment.getTitle())
-                    .append("\nAddress: ")
+                    .append("\n Address: ")
                     .append(apartment.getAddress())
-                    .append("\nPrice: ")
+                    .append("\n Price: ")
                     .append(apartment.getPrice())
-                    .append("\nRooms: ")
+                    .append("\n Rooms: ")
                     .append(apartment.getRooms())
-                    .append("\nArea: ")
+                    .append("\n Area: ")
                     .append(apartment.getArea())
-                    .append("\nTags")
+                    .append("\n Tags")
                     .append(String.join(", ", apartment.getTags()))
-                    .append("\nLink: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getId());
+                    .append("\n Link: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getId());
             contentBuilder.append("\n\n\n");
         });
 

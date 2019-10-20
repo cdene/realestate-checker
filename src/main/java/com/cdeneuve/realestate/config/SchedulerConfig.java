@@ -13,7 +13,7 @@ public class SchedulerConfig {
     @Autowired
     private SearchRefresher searchRefresher;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 120000)
     public void refresh() {
         searchRefresher.refreshSearch();
     }
