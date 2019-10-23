@@ -95,9 +95,12 @@ public class ApartmentParser {
                 .replace(",", ".")
                 .trim();
 
-        List<String> tags = detailsElement.getElementsByClass("result-list-entry__secondary-criteria").get(0)
-                .getElementsByTag("li").stream()
-                .map(Element::text).collect(Collectors.toList());
+        Elements tagsElement = detailsElement.getElementsByClass("result-list-entry__secondary-criteria");
+        List<String> tags = tagsElement == null || tagsElement.isEmpty() ?
+                new ArrayList<>()
+                : tagsElement.get(0).getElementsByTag("li").stream()
+                .map(Element::text)
+                .collect(Collectors.toList());
 
         return Details.builder()
                 .price(new BigDecimal(priceString))

@@ -13,7 +13,7 @@ import java.util.LinkedList;
 @Slf4j
 @Service
 public class SearchRefresher {
-    private static final String searchUrl = "https://www.immobilienscout24.de/Suche/S-2/P-1/Wohnung-Miete/Bayern/Muenchen/-/2,00-/-/EURO--1100,00/-/-/-/true";
+    private static final String searchUrl = "https://www.immobilienscout24.de/Suche/S-2/Wohnung-Miete/Bayern/Muenchen/-/1,50-/40,00-/EURO--1100,00";
 
     private LinkedList<RefreshAttempt> refreshAttempts = new LinkedList<>();
 
