@@ -1,8 +1,8 @@
 package com.cdeneuve.realestate.core.service;
 
+import com.cdeneuve.realestate.core.model.ErrorNotification;
 import com.cdeneuve.realestate.core.model.RefreshAttempt;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,15 @@ public class SearchRefresher {
 
     private LinkedList<RefreshAttempt> refreshAttempts = new LinkedList<>();
 
-    @Autowired
-    public RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final SearchProcessor searchProcessor;
+    private final NotificationService notificationService;
 
-    @Autowired
-    public SearchProcessor searchProcessor;
+    public SearchRefresher(RestTemplate restTemplate, SearchProcessor searchProcessor, NotificationService notificationService) {
+        this.restTemplate = restTemplate;
+        this.searchProcessor = searchProcessor;
+        this.notificationService = notificationService;
+    }
 
     public void refreshSearch() {
         try {
@@ -30,8 +34,9 @@ public class SearchRefresher {
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 searchProcessor.processSearchResults(responseEntity.getBody());
             }
-        } catch (Throwable throwable) {
-            log.error("Error on refresh", throwable);
+        } catch (Exception ex) {
+            log.error("Error on refresh", ex);
+            notificationService.sendNotification(ErrorNotification.ofException(ex));
         }
     }
 
