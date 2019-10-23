@@ -1,6 +1,7 @@
 package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.Apartment;
+import com.cdeneuve.realestate.core.model.ApartmentNotification;
 import com.cdeneuve.realestate.core.source.ApartmentSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class SearchProcessor {
                 .collect(Collectors.toList());
         newApartments.forEach(apartment -> {
             apartmentSource.save(apartment);
-            notificationService.newApartmentCreated(apartment);
+            notificationService.sendNotification(ApartmentNotification.newApartmentCreated(apartment));
         });
         log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.size());
     }

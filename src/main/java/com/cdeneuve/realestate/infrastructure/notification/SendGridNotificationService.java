@@ -1,6 +1,6 @@
 package com.cdeneuve.realestate.infrastructure.notification;
 
-import com.cdeneuve.realestate.core.model.Apartment;
+import com.cdeneuve.realestate.core.model.Notification;
 import com.cdeneuve.realestate.core.service.NotificationService;
 import com.sendgrid.*;
 import lombok.extern.slf4j.Slf4j;
@@ -8,14 +8,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -24,7 +28,7 @@ public class SendGridNotificationService implements NotificationService {
     private static final String RECIPIENT_EMAIL = "RECIPIENT_EMAIL";
     private static final String CONTENT_TYPE = "text/plain";
 
-    private List<Apartment> apartmentsToSend = new LinkedList();
+    private List<Notification> notifications = new LinkedList();
     private LocalDateTime silentTime = LocalDateTime.now().plusMinutes(3);
     private LocalDateTime lastTimeTriggered = LocalDateTime.now();
     private AtomicInteger counter = new AtomicInteger(0);
@@ -34,13 +38,12 @@ public class SendGridNotificationService implements NotificationService {
     private String recipient = System.getenv(RECIPIENT_EMAIL);
 
     @Override
-    public void newApartmentCreated(Apartment apartment) {
+    public void sendNotification(Notification notification) {
         if (LocalDateTime.now().isAfter(silentTime)) {
             try {
                 if (lock.tryLock(1, TimeUnit.MINUTES)) {
                     try {
-                        apartmentsToSend.add(apartment);
-                        log.info("New apartment {} added to email queue", apartment.getId());
+                        notifications.add(notification);
                     } finally {
                         lock.unlock();
                     }
@@ -51,9 +54,9 @@ public class SendGridNotificationService implements NotificationService {
         }
     }
 
-    @Scheduled(fixedRate = 180000)
+    @Scheduled(fixedRate = 60000)
     public void flush() {
-        log.info("Mail service triggered. Apartments in the queue = {}", apartmentsToSend.size());
+        log.info("Mail service triggered. Notifications in the queue = {}", notifications.size());
         LocalDateTime now = LocalDateTime.now();
         try {
             if (lock.tryLock(1, TimeUnit.MINUTES)) {
@@ -63,8 +66,8 @@ public class SendGridNotificationService implements NotificationService {
                         this.counter = new AtomicInteger(0);
                     }
                     this.lastTimeTriggered = now;
-                    List<Apartment> toSend = apartmentsToSend;
-                    apartmentsToSend = new LinkedList();
+                    List<Notification> toSend = notifications;
+                    notifications = new LinkedList();
                     CompletableFuture.runAsync(() -> this.sendEmail(toSend));
                 } finally {
                     lock.unlock();
@@ -75,54 +78,43 @@ public class SendGridNotificationService implements NotificationService {
         }
     }
 
-    private void sendEmail(List<Apartment> apartments) {
-        if (apartments.size() > 0 && counter.get() < 100) {
-            Mail email = createEmail(apartments);
-            SendGrid sg = new SendGrid(key);
-            Request request = new Request();
-            try {
-                request.setMethod(Method.POST);
-                request.setEndpoint("mail/send");
-                request.setBody(email.build());
-                Response response = sg.api(request);
-                log.info("Email sent. Response: {}", response);
-                counter.incrementAndGet();
-            } catch (Throwable throwable) {
-                log.error("Error on send email", throwable);
-            }
+    private void sendEmail(List<Notification> notifications) {
+        if (notifications.size() > 0 && counter.get() < 100) {
+            createEmail(notifications).forEach(email -> {
+                SendGrid sg = new SendGrid(key);
+                Request request = new Request();
+                try {
+                    request.setMethod(Method.POST);
+                    request.setEndpoint("mail/send");
+                    request.setBody(email.build());
+                    Response response = sg.api(request);
+                    log.info("Email sent. Response: {}", response);
+                    counter.incrementAndGet();
+                } catch (Throwable throwable) {
+                    log.error("Error on send email", throwable);
+                }
+            });
         }
     }
 
-    private Mail createEmail(List<Apartment> apartments) {
+    private List<Mail> createEmail(List<Notification> notifications) {
         Email from = new Email("real-estate@check.com");
-        String subject = "Apartment news: " + apartments.size() + " new apartments added";
         Email to = new Email(recipient);
 
-        StringBuilder contentBuilder = new StringBuilder();
-        apartments.forEach(apartment -> {
-            contentBuilder.append(apartment.getId())
-                    .append(" [")
-                    .append(apartment.getTimestamp().format(DateTimeFormatter.ISO_DATE_TIME))
-                    .append("]")
-                    .append("\n ")
-                    .append(apartment.getTitle())
-                    .append("\n Address: ")
-                    .append(apartment.getAddress())
-                    .append("\n Price: ")
-                    .append(apartment.getPrice())
-                    .append("\n Rooms: ")
-                    .append(apartment.getRooms())
-                    .append("\n Area: ")
-                    .append(apartment.getArea())
-                    .append("\n Tags")
-                    .append(String.join(", ", apartment.getTags()))
-                    .append("\n Link: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getId());
-            contentBuilder.append("\n\n\n");
-        });
+        Map<Class, List<Notification>> groupedNotifications = notifications.stream()
+                .collect(Collectors.groupingBy(
+                        Notification::getClass,
+                        toList()
+                ));
 
-        Content content = new Content(CONTENT_TYPE, contentBuilder.toString());
-        log.info("Email body: {}", contentBuilder.toString());
+        List<Mail> mails = groupedNotifications.values().stream().map(notificationList -> {
+            String subject = "" + notificationList.size() + " new " + notificationList.get(0).getClass().getSimpleName();
+            Content content = new Content(CONTENT_TYPE, notificationList.stream()
+                    .map(Notification::getPayload)
+                    .collect(joining("\n\n\n\n\n")));
+            return new Mail(from, subject, to, content);
+        }).collect(toList());
 
-        return new Mail(from, subject, to, content);
+        return mails;
     }
 }

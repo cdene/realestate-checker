@@ -1,10 +1,10 @@
 package com.cdeneuve.realestate.core.service;
 
-import com.cdeneuve.realestate.core.model.Apartment;
+import com.cdeneuve.realestate.core.model.Notification;
 
 
 public interface NotificationService {
 
-    void newApartmentCreated(Apartment apartment);
+    void sendNotification(Notification notification);
 
 }

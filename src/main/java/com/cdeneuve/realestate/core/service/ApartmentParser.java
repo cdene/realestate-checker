@@ -1,6 +1,7 @@
 package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.Apartment;
+import com.cdeneuve.realestate.core.model.ErrorNotification;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -23,6 +24,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ApartmentParser {
+    private final NotificationService notificationService;
+
+    public ApartmentParser(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     public List<Apartment> parseApartmentIdsFromHtml(String htmlContent) {
         Document document = Jsoup.parse(htmlContent, "UTF-8");
@@ -42,30 +48,35 @@ public class ApartmentParser {
     }
 
     Optional<Apartment> parseApartment(Node apartmentNode) {
-        String apartmentId = apartmentNode.attr("data-id");
+        try {
+            String apartmentId = apartmentNode.attr("data-id");
 
-        Element apartmentElement = (Element) apartmentNode;
+            Element apartmentElement = (Element) apartmentNode;
 
-        Elements dataElements = apartmentElement.getElementsByClass("result-list-entry__data");
-        if (dataElements.isEmpty()) {
+            Elements dataElements = apartmentElement.getElementsByClass("result-list-entry__data");
+            if (dataElements.isEmpty()) {
+                return Optional.empty();
+            } else {
+                Element apartmentDataElement = apartmentElement.getElementsByClass("result-list-entry__data").get(0);
+                String title = parseTitle(apartmentDataElement);
+                String address = parseAddress(apartmentDataElement);
+                Details details = parseDetails(apartmentDataElement);
+
+                return Optional.of(
+                        Apartment.builder()
+                                .id(apartmentId)
+                                .title(title)
+                                .address(address)
+                                .price(details.getPrice())
+                                .area(details.getArea())
+                                .rooms(details.getRooms())
+                                .tags(details.getTags())
+                                .timestamp(LocalDateTime.now())
+                                .build());
+            }
+        } catch (Exception ex) {
+            notificationService.sendNotification(ErrorNotification.ofException(ex));
             return Optional.empty();
-        } else {
-            Element apartmentDataElement = apartmentElement.getElementsByClass("result-list-entry__data").get(0);
-            String title = parseTitle(apartmentDataElement);
-            String address = parseAddress(apartmentDataElement);
-            Details details = parseDetails(apartmentDataElement);
-
-            return Optional.of(
-                    Apartment.builder()
-                            .id(apartmentId)
-                            .title(title)
-                            .address(address)
-                            .price(details.getPrice())
-                            .area(details.getArea())
-                            .rooms(details.getRooms())
-                            .tags(details.getTags())
-                            .timestamp(LocalDateTime.now())
-                            .build());
         }
     }
 
