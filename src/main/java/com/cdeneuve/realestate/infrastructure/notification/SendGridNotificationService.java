@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +110,7 @@ public class SendGridNotificationService implements NotificationService {
                 ));
 
         List<Mail> mails = groupedNotifications.values().stream().map(notificationList -> {
-            String subject = "" + notificationList.size() + " new " + notificationList.get(0).getClass().getSimpleName();
+            String subject = "[=" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "=] " + notificationList.size() + " new " + notificationList.get(0).getClass().getSimpleName();
             Content content = new Content(CONTENT_TYPE, notificationList.stream()
                     .map(Notification::getPayload)
                     .collect(joining("\n\n\n\n\n")));
