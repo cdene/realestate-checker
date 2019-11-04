@@ -31,7 +31,7 @@ public class TelegramNotificationService implements NotificationService {
             sendMessage.enableMarkdown(true);
             sendMessage.setChatId(chatId);
             sendMessage.setText(notification.getPayload());
-            //notificationBot.execute(sendMessage);
+            notificationBot.execute(sendMessage);
         } catch (Exception e) {
             log.error("Exception on sendMessage ", e);
         }
