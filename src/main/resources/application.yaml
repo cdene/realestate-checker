@@ -21,6 +21,19 @@ aws:
 ---
 spring:
   profiles:
+    active: default
+
+notifications:
+  enabled: true
+  email:
+    enabled: false
+    silenceInterval: 5
+  telegram:
+    enabled: true
+
+---
+spring:
+  profiles:
     active: dev
 
 notifications:

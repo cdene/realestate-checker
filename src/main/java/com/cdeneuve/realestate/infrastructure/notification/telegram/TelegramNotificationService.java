@@ -3,7 +3,6 @@ package com.cdeneuve.realestate.infrastructure.notification.telegram;
 import com.cdeneuve.realestate.core.model.Notification;
 import com.cdeneuve.realestate.core.notification.NotificationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -22,24 +21,19 @@ public class TelegramNotificationService implements NotificationService {
     private final Collection<String> users = new HashSet<>();
     private final Map<String, Long> userChatLinks = new ConcurrentHashMap<>();
 
-    @Value("${notifications.telegram.enabled:false}")
-    private boolean notificationEnabled;
-
     public TelegramNotificationService() {
         this.notificationBot = new NotificationBot();
     }
 
     public void sendNotification(Long chatId, Notification notification) {
-        if (notificationEnabled) {
-            try {
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.enableMarkdown(true);
-                sendMessage.setChatId(chatId);
-                sendMessage.setText(notification.getPayload());
-                notificationBot.execute(sendMessage);
-            } catch (Exception e) {
-                log.error("Exception on sendMessage ", e);
-            }
+        try {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.enableMarkdown(true);
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(notification.getPayload());
+            //notificationBot.execute(sendMessage);
+        } catch (Exception e) {
+            log.error("Exception on sendMessage ", e);
         }
     }
 
@@ -69,7 +63,7 @@ public class TelegramNotificationService implements NotificationService {
                 if (chat.isUserChat()) {
                     String userName = Optional.ofNullable(getUserName(chat)).orElse(chat.getId().toString());
                     if (!userChatLinks.containsKey(userName)) {
-                        log.debug("New user appears: {}", chat.getUserName());
+                        log.info("New user subscribed: {}", userName);
                         userChatLinks.put(userName, chat.getId());
                     }
                 }
