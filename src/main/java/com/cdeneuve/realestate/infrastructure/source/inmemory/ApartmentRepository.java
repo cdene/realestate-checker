@@ -1,14 +1,13 @@
-package com.cdeneuve.realestate.infrastructure.repository;
+package com.cdeneuve.realestate.infrastructure.source.inmemory;
 
 import com.cdeneuve.realestate.core.model.Apartment;
 import com.cdeneuve.realestate.core.source.ApartmentSource;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class ApartmentRepository implements ApartmentSource {
     private Map<String, Apartment> apartments = new ConcurrentHashMap<>();
 

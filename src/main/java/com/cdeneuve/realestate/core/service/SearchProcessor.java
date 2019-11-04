@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
+
 @Slf4j
 @Service
 public class SearchProcessor {
@@ -35,7 +37,7 @@ public class SearchProcessor {
             apartmentSource.save(apartment);
             notificationManager.sendNotification(ApartmentNotification.newApartmentCreated(apartment));
         });
-        log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.size());
+        log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.stream().map(Apartment::getId).collect(toSet()));
     }
 
 }

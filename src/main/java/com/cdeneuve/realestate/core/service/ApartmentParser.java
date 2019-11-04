@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ApartmentParser {
                                 .area(details.getArea())
                                 .rooms(details.getRooms())
                                 .tags(details.getTags())
-                                .timestamp(LocalDateTime.now())
+                                .timestamp(LocalDateTime.now(ZoneId.of("Europe/Berlin")))
                                 .build());
             }
         } catch (Exception ex) {

@@ -7,6 +7,24 @@ spring:
       indent_output: true
 
 notifications:
+  enabled: true
+  email:
+    enabled: false
+    silenceInterval: 5
+  telegram:
+    enabled: true
+
+aws:
+  dynamodb:
+    region: eu-central-1
+
+---
+spring:
+  profiles:
+    active: dev
+
+notifications:
+  enabled: true
   email:
     enabled: false
     silenceInterval: 5

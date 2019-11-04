@@ -1,4 +1,4 @@
-package com.cdeneuve.realestate.infrastructure.notification;
+package com.cdeneuve.realestate.infrastructure.notification.sendgrid;
 
 import com.cdeneuve.realestate.core.model.Notification;
 import com.cdeneuve.realestate.core.notification.NotificationService;
@@ -41,6 +41,9 @@ public class SendGridNotificationService implements NotificationService {
 
     private Lock lock = new ReentrantLock();
 
+    @Value("${notifications.email.enabled:false}")
+    private boolean notificationEnabled;
+
     public SendGridNotificationService(@Value("${notifications.email.silenceInterval:20}")
                                                Integer silenceInterval) {
         this.silentTime = LocalDateTime.now().plusMinutes(silenceInterval);
@@ -80,20 +83,22 @@ public class SendGridNotificationService implements NotificationService {
     }
 
     private void sendEmails(List<Mail> emailNotifications) {
-        if (emailNotifications.size() > 0 && counter.get() < 100) {
-            emailNotifications.forEach(email -> {
+        if (notificationEnabled) {
+            if (emailNotifications.size() > 0 && counter.get() < 100) {
+                emailNotifications.forEach(email -> {
 
-                Request request = new Request();
-                try {
-                    request.setMethod(Method.POST);
-                    request.setEndpoint("mail/send");
-                    request.setBody(email.build());
-                    send(request);
-                    counter.incrementAndGet();
-                } catch (Throwable throwable) {
-                    log.error("Error on send email", throwable);
-                }
-            });
+                    Request request = new Request();
+                    try {
+                        request.setMethod(Method.POST);
+                        request.setEndpoint("mail/send");
+                        request.setBody(email.build());
+                        send(request);
+                        counter.incrementAndGet();
+                    } catch (Throwable throwable) {
+                        log.error("Error on send email", throwable);
+                    }
+                });
+            }
         }
     }
 

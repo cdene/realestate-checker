@@ -1,5 +1,7 @@
 package com.cdeneuve.realestate.core.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,8 +10,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Builder
 @Getter
+@Builder
+@JsonDeserialize(builder = Apartment.ApartmentBuilder.class)
 public class Apartment {
     private final String id;
     private final String title;
@@ -19,6 +22,21 @@ public class Apartment {
     private final BigDecimal rooms;
     private final List<String> tags;
     private final LocalDateTime timestamp;
+
+    Apartment(String id, String title, String address, BigDecimal price, BigDecimal area, BigDecimal rooms, List<String> tags, LocalDateTime timestamp) {
+        this.id = id;
+        this.title = title;
+        this.address = address;
+        this.price = price;
+        this.area = area;
+        this.rooms = rooms;
+        this.tags = tags;
+        this.timestamp = timestamp;
+    }
+
+    public static ApartmentBuilder builder() {
+        return new ApartmentBuilder();
+    }
 
     @Override
     public String toString() {
@@ -39,5 +57,10 @@ public class Apartment {
                 .append(String.join(", ", getTags()))
                 .append("\nLink: ").append("https://www.immobilienscout24.de/expose/").append(getId());
         return sb.toString();
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class ApartmentBuilder {
+
     }
 }

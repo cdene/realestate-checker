@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 public class NotificationBot extends TelegramLongPollingBot {
     private static final String BOT_NAME = "realestate-checker";
-    private static final String TOKEN = System.getenv("BOT_TOKEN");
+    private static final String TOKEN = System.getenv("TELEGRAM_BOT_TOKEN");
 
     @Override
     public String getBotToken() {
