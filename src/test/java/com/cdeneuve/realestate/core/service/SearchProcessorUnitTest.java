@@ -1,6 +1,7 @@
 package com.cdeneuve.realestate.core.service;
 
 
+import com.cdeneuve.realestate.core.notification.NotificationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -5,3 +5,10 @@ spring:
   jackson:
     serialization:
       indent_output: true
+
+notifications:
+  email:
+    enabled: false
+    silenceInterval: 5
+  telegram:
+    enabled: false

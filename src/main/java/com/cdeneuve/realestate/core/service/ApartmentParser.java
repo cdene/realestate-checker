@@ -2,6 +2,7 @@ package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.Apartment;
 import com.cdeneuve.realestate.core.model.ErrorNotification;
+import com.cdeneuve.realestate.core.notification.NotificationManager;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -24,10 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ApartmentParser {
-    private final NotificationService notificationService;
+    private final NotificationManager notificationManager;
 
-    public ApartmentParser(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    public ApartmentParser(NotificationManager notificationManager) {
+        this.notificationManager = notificationManager;
     }
 
     public List<Apartment> parseApartmentIdsFromHtml(String htmlContent) {
@@ -75,7 +76,7 @@ public class ApartmentParser {
                                 .build());
             }
         } catch (Exception ex) {
-            notificationService.sendNotification(ErrorNotification.ofException(ex));
+            notificationManager.sendNotification(ErrorNotification.ofException(ex));
             return Optional.empty();
         }
     }
@@ -93,18 +94,31 @@ public class ApartmentParser {
     private Details parseDetails(Element apartmentData) {
         Element detailsElement = apartmentData.getElementsByClass("result-list-entry__criteria margin-bottom-s").get(0);
         Elements primary = detailsElement.getElementsByClass("grid-item result-list-entry__primary-criterion ");
-        String priceString = primary.get(0).getElementsByTag("dd").text()
-                .replace("€", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .trim();
-        String areaString = primary.get(1).getElementsByTag("dd").text()
-                .replace("m²", "")
-                .replace(",", ".")
-                .trim();
-        String numberOfRoomsString = primary.get(2).getElementsByTag("dd").get(0).getElementsByClass("onlyLarge").text()
-                .replace(",", ".")
-                .trim();
+
+        BigDecimal price = BigDecimal.ZERO;
+        BigDecimal area = BigDecimal.ZERO;
+        BigDecimal numberOfRooms = BigDecimal.ZERO;
+
+
+        for (int i = 0; i < Math.min(primary.size(), 3); i++) {
+            Element element = primary.get(i);
+            String string = element.getElementsByTag("dd").text();
+            if (string.contains("€")) {
+                price = new BigDecimal(string.replace("€", "")
+                        .replace(".", "")
+                        .replace(",", ".")
+                        .trim());
+            } else if (string.contains("m²")) {
+                area = new BigDecimal(string.replace("m²", "")
+                        .replace(",", ".")
+                        .trim());
+            } else {
+                String numberOfRoomsString = element.getElementsByTag("dd").get(0).getElementsByClass("onlyLarge").text()
+                        .replace(",", ".")
+                        .trim();
+                numberOfRooms = new BigDecimal(numberOfRoomsString);
+            }
+        }
 
         Elements tagsElement = detailsElement.getElementsByClass("result-list-entry__secondary-criteria");
         List<String> tags = tagsElement == null || tagsElement.isEmpty() ?
@@ -114,9 +128,9 @@ public class ApartmentParser {
                 .collect(Collectors.toList());
 
         return Details.builder()
-                .price(new BigDecimal(priceString))
-                .area(new BigDecimal(areaString))
-                .rooms(new BigDecimal(numberOfRoomsString))
+                .price(price)
+                .area(area)
+                .rooms(numberOfRooms)
                 .tags(tags)
                 .build();
     }

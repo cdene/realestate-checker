@@ -2,6 +2,7 @@ package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.ErrorNotification;
 import com.cdeneuve.realestate.core.model.RefreshAttempt;
+import com.cdeneuve.realestate.core.notification.NotificationManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,12 @@ public class SearchRefresher {
 
     private final RestTemplate restTemplate;
     private final SearchProcessor searchProcessor;
-    private final NotificationService notificationService;
+    private final NotificationManager notificationManager;
 
-    public SearchRefresher(RestTemplate restTemplate, SearchProcessor searchProcessor, NotificationService notificationService) {
+    public SearchRefresher(RestTemplate restTemplate, SearchProcessor searchProcessor, NotificationManager notificationManager) {
         this.restTemplate = restTemplate;
         this.searchProcessor = searchProcessor;
-        this.notificationService = notificationService;
+        this.notificationManager = notificationManager;
     }
 
     public void refreshSearch() {
@@ -36,7 +37,7 @@ public class SearchRefresher {
             }
         } catch (Exception ex) {
             log.error("Error on refresh", ex);
-            notificationService.sendNotification(ErrorNotification.ofException(ex));
+            notificationManager.sendNotification(ErrorNotification.ofException(ex));
         }
     }
 
