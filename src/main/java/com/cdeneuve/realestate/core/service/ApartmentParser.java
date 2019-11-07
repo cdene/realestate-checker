@@ -1,7 +1,6 @@
 package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.Apartment;
-import com.cdeneuve.realestate.core.model.ErrorNotification;
 import com.cdeneuve.realestate.core.notification.NotificationManager;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,7 +76,7 @@ public class ApartmentParser {
                                 .build());
             }
         } catch (Exception ex) {
-            notificationManager.sendNotification(ErrorNotification.ofException(ex));
+            log.error("Error during a parsing process: ", ex);
             return Optional.empty();
         }
     }
