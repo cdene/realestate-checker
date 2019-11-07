@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.*;
@@ -20,6 +22,8 @@ public class TelegramNotificationService implements NotificationService {
     private final NotificationBot notificationBot;
     private final Collection<String> users = new HashSet<>();
     private final Map<String, Long> userChatLinks = new ConcurrentHashMap<>();
+    private final static String LIKE_CALLBACK = "like";
+    private final static String POOP_CALLBACK = "poop";
 
     public TelegramNotificationService() {
         this.notificationBot = new NotificationBot();
@@ -27,10 +31,9 @@ public class TelegramNotificationService implements NotificationService {
 
     public void sendNotification(Long chatId, Notification notification) {
         try {
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.enableMarkdown(true);
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(notification.getPayload());
+            SendMessage sendMessage = getMessageTemplate()
+                    .setChatId(chatId)
+                    .setText(notification.getPayload());
             notificationBot.execute(sendMessage);
         } catch (Exception e) {
             log.error("Exception on sendMessage ", e);
@@ -81,5 +84,27 @@ public class TelegramNotificationService implements NotificationService {
         } else {
             return chat.getFirstName() != null ? chat.getFirstName() : chat.getLastName();
         }
+    }
+
+    private SendMessage getMessageTemplate() {
+        SendMessage message = new SendMessage();
+        message.enableMarkdown(true);
+
+        List<InlineKeyboardButton> options = new ArrayList<>();
+        InlineKeyboardButton likeButton = new InlineKeyboardButton();
+        likeButton.setText("\uD83D\uDE0D");
+        likeButton.setCallbackData(LIKE_CALLBACK);
+        InlineKeyboardButton dislikeButton = new InlineKeyboardButton();
+        dislikeButton.setText("\uD83D\uDCA9");
+        dislikeButton.setCallbackData(POOP_CALLBACK);
+        options.add(likeButton);
+        options.add(dislikeButton);
+
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        keyboard.getKeyboard().add(options);
+
+        message.setReplyMarkup(keyboard);
+
+        return message;
     }
 }
