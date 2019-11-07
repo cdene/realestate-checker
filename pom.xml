@@ -9,7 +9,7 @@
 
     <scm>
         <connection>scm:git:https//github.com/cdene/realestate-checker.git</connection>
-        <developerConnection>scm:git:git@github.com/cdene/realestate-checker.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/cdene/realestate-checker.git</developerConnection>
       <tag>realestate-checker-1.1.0</tag>
   </scm>
 
