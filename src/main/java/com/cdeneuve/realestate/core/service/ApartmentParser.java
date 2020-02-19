@@ -92,7 +92,7 @@ public class ApartmentParser {
     }
 
     private Details parseDetails(Element apartmentData) {
-        Element detailsElement = apartmentData.getElementsByClass("result-list-entry__criteria margin-bottom-s").get(0);
+        Element detailsElement = apartmentData.getElementsByClass("result-list-entry__criteria").get(0);
         Elements primary = detailsElement.getElementsByClass("grid-item result-list-entry__primary-criterion ");
 
         BigDecimal price = BigDecimal.ZERO;

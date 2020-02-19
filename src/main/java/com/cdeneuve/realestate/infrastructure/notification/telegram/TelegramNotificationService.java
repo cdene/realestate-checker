@@ -24,6 +24,7 @@ public class TelegramNotificationService implements NotificationService {
     private final Map<String, Long> userChatLinks = new ConcurrentHashMap<>();
     private final static String LIKE_CALLBACK = "like";
     private final static String POOP_CALLBACK = "poop";
+    private final String admin = System.getenv("TELEGRAM_BOT_ADMIN");
 
     public TelegramNotificationService() {
         this.notificationBot = new NotificationBot();
@@ -64,7 +65,7 @@ public class TelegramNotificationService implements NotificationService {
             updates.forEach(update -> {
                 Chat chat = update.getMessage().getChat();
                 if (chat.isUserChat()) {
-                    String userName = Optional.ofNullable(getUserName(chat)).orElse(chat.getId().toString());
+                    String userName = admin;
                     if (!userChatLinks.containsKey(userName)) {
                         log.info("New user subscribed: {}", userName);
                         userChatLinks.put(userName, chat.getId());
