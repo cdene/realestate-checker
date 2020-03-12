@@ -7,8 +7,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+//TODO not sure if still needed
 //@Service
-public class ApartmentRepository implements ApartmentSource {
+public class InmemoryApartmentRepository implements ApartmentSource {
     private Map<String, Apartment> apartments = new ConcurrentHashMap<>();
 
     @Override
@@ -34,5 +35,10 @@ public class ApartmentRepository implements ApartmentSource {
                 .sorted(Comparator.comparing(Apartment::getTimestamp).reversed())
                 .collect(Collectors.toList());
         sorted.forEach(System.out::println);
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return apartments.containsKey(id);
     }
 }

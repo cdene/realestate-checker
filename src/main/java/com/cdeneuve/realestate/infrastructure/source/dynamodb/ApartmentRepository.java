@@ -8,13 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,6 +39,11 @@ public class ApartmentRepository implements ApartmentSource {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return table.getItem(new PrimaryKey(PRIMARY_PARTITION_KEY, id)) != null;
     }
 
     @Override

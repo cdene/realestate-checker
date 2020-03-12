@@ -1,9 +1,7 @@
 package com.cdeneuve.realestate.core.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.Getter;
+import com.fasterxml.jackson.databind.annotation.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@EqualsAndHashCode(of = "id")
 @JsonDeserialize(builder = Apartment.ApartmentBuilder.class)
 public class Apartment {
     private final String id;

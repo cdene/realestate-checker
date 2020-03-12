@@ -1,7 +1,6 @@
 package com.cdeneuve.realestate.core.service;
 
-import com.cdeneuve.realestate.core.model.Apartment;
-import com.cdeneuve.realestate.core.model.ApartmentNotification;
+import com.cdeneuve.realestate.core.model.*;
 import com.cdeneuve.realestate.core.notification.NotificationManager;
 import com.cdeneuve.realestate.core.source.ApartmentSource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ public class SearchProcessor {
     public void processSearchResults(String htmlResultPage) {
         List<Apartment> apartments = apartmentParser.parseApartmentIdsFromHtml(htmlResultPage);
         List<Apartment> newApartments = apartments.stream()
-                .filter(apartment -> !apartmentSource.getById(apartment.getId()).isPresent())
+                .filter(apartment -> !apartmentSource.existsById(apartment.getId()))
                 .collect(Collectors.toList());
         newApartments.forEach(apartment -> {
             apartmentSource.save(apartment);
