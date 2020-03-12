@@ -15,36 +15,6 @@
         <tag>realestate-checker-1.1.0</tag>
     </scm>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.cdeneuve.realestate.RealEstateApp</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-            </plugin>
-        </plugins>
-    </build>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -109,6 +79,56 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>aws-release</id>
+            <name>AWS Release Repository</name>
+            <url>s3://cdeneuve-maven-repo/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>aws-snapshot</id>
+            <name>AWS Snapshot Repository</name>
+            <url>s3://cdeneuve-maven-repo/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>com.github.platform-team</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>6.0.0</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.cdeneuve.realestate.RealEstateApp</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
