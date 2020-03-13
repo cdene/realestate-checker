@@ -6,7 +6,7 @@ echo "Deploy version ${RELEASE_VERSION} on prod"
 aws elasticbeanstalk create-application-version --application-name realestate-check \
 --version-label ${RELEASE_VERSION} --source-bundle \
 S3Bucket=cdeneuve-maven-repo,\
-S3Key=release/com/cdeneuve/realestate/realestate-checker/${1}/realestate-checker-${1}.jar
+S3Key=release/com/cdeneuve/realestate/realestate-checker/${RELEASE_VERSION}/realestate-checker-${RELEASE_VERSION}.jar
 
 aws elasticbeanstalk update-environment --environment-name realestate-check-env \
  --version-label ${RELEASE_VERSION}
