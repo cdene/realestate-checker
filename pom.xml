@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.cdeneuve.realestate</groupId>
@@ -11,7 +12,6 @@
     <scm>
         <connection>scm:git:https://github.com/cdene/realestate-checker.git</connection>
         <developerConnection>scm:git:https://github.com/cdene/realestate-checker.git</developerConnection>
-        <tag>realestate-checker-1.1.0</tag>
     </scm>
 
     <parent>
@@ -19,6 +19,12 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.9.RELEASE</version>
     </parent>
+    <properties>
+        <aws.sdk.version>1.11.658</aws.sdk.version>
+        <jsoup.version>1.12.1</jsoup.version>
+        <sendgrid.version>4.0.1</sendgrid.version>
+        <telegrambots.version>4.4.0.1</telegrambots.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -28,17 +34,17 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.11.658</version>
+            <version>${aws.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.11.658</version>
+            <version>${aws.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.12.1</version>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -50,12 +56,12 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>4.4.0.1</version>
+            <version>${telegrambots.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
-            <version>4.0.1</version>
+            <version>${sendgrid.version}</version>
         </dependency>
 
 
@@ -120,11 +126,30 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
+            </plugin>
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution><!-- Run our version calculation script -->
+                        <id>Deploy latest tag on prod</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/scripts/deploy-prod.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
