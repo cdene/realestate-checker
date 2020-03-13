@@ -26,13 +26,14 @@ public class TelegramNotificationService implements NotificationService {
 
     public TelegramNotificationService() {
         this.notificationBot = new NotificationBot();
+        this.userChatLinks.put(admin, Long.valueOf(admin));
     }
 
     public void sendNotification(Long chatId, Notification notification) {
         try {
             log.info("Send notification to telegram user={}", chatId);
             SendMessage sendMessage = getMessageTemplate()
-                    .setChatId(admin)
+                    .setChatId(chatId)
                     .setText(notification.getPayload());
             notificationBot.execute(sendMessage);
         } catch (Exception e) {
