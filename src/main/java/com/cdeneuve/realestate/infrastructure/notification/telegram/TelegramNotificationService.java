@@ -3,12 +3,10 @@ package com.cdeneuve.realestate.infrastructure.notification.telegram;
 import com.cdeneuve.realestate.core.model.Notification;
 import com.cdeneuve.realestate.core.notification.NotificationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -32,6 +30,7 @@ public class TelegramNotificationService implements NotificationService {
 
     public void sendNotification(Long chatId, Notification notification) {
         try {
+            log.info("Send notification to telegram user={}", chatId);
             SendMessage sendMessage = getMessageTemplate()
                     .setChatId(chatId)
                     .setText(notification.getPayload());
@@ -57,7 +56,7 @@ public class TelegramNotificationService implements NotificationService {
                 .forEach(chatId -> sendNotification(chatId, notification));
     }
 
-    @Scheduled(fixedRate = 60000)
+    //@Scheduled(fixedRate = 60000) //TODO temporary banned
     public void getUpdates() {
         try {
             GetUpdates getUpdates = new GetUpdates();
