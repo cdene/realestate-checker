@@ -32,7 +32,7 @@ public class TelegramNotificationService implements NotificationService {
         try {
             log.info("Send notification to telegram user={}", chatId);
             SendMessage sendMessage = getMessageTemplate()
-                    .setChatId(chatId)
+                    .setChatId(admin)
                     .setText(notification.getPayload());
             notificationBot.execute(sendMessage);
         } catch (Exception e) {
