@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-RELEASE_VERSION = git describe --abbrev=0 --tags
-echo "Release tag: ${RELEASE_VERSION}"
+RELEASE_VERSION=$(git describe --abbrev=0 --tags)
+echo "Deploy version ${RELEASE_VERSION} on prod"
 
 aws elasticbeanstalk create-application-version --application-name realestate-check \
 --version-label ${RELEASE_VERSION} --source-bundle \
