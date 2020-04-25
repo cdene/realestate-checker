@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class ApartmentRepository implements ApartmentSource {
+public class DynamoDBApartmentRepository implements ApartmentSource {
     private final static String APARTMENT_TABLE_NAME = "realestate";
     private final static String PRIMARY_PARTITION_KEY = "id";
     private final static String PRIMARY_SORT_KEY = "timestamp";
@@ -24,7 +24,7 @@ public class ApartmentRepository implements ApartmentSource {
     private final ZoneId zoneId;
     private final ZoneOffset zoneOffSet;
 
-    public ApartmentRepository(DynamoDB dynamoDB, ObjectMapper objectMapper) {
+    public DynamoDBApartmentRepository(DynamoDB dynamoDB, ObjectMapper objectMapper) {
         this.table = dynamoDB.getTable(APARTMENT_TABLE_NAME);
         this.mapper = objectMapper;
         this.zoneId = ZoneId.of("Europe/Berlin");
