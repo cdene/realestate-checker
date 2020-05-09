@@ -6,14 +6,13 @@ import com.cdeneuve.realestate.core.source.ApartmentSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Repository
+//@Repository
 public class DynamoDBApartmentRepository implements ApartmentSource {
     private final static String APARTMENT_TABLE_NAME = "realestate";
     private final static String PRIMARY_PARTITION_KEY = "id";

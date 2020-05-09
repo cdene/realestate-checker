@@ -17,6 +17,10 @@ notifications:
 aws:
   dynamodb:
     region: eu-central-1
+mongodb:
+  host: localhost
+  port: 20001
+  user: realestate_admin
 
 ---
 spring:
