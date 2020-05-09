@@ -5,13 +5,13 @@
     <groupId>com.cdeneuve.realestate</groupId>
     <artifactId>realestate-checker</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
 
 
     <scm>
         <connection>scm:git:https://github.com/cdene/realestate-checker.git</connection>
         <developerConnection>scm:git:https://github.com/cdene/realestate-checker.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>1.4.3</tag>
   </scm>
 
     <parent>
