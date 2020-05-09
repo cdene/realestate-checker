@@ -8,5 +8,5 @@ aws elasticbeanstalk create-application-version --application-name realestate-ch
 S3Bucket=cdeneuve-maven-repo,\
 S3Key=release/com/cdeneuve/realestate/realestate-checker/${RELEASE_VERSION}/realestate-checker-${RELEASE_VERSION}.jar
 
-aws elasticbeanstalk update-environment --environment-name realestate-check-env \
- --version-label ${RELEASE_VERSION}
+#aws elasticbeanstalk update-environment --environment-name realestate-check-env \
+# --version-label ${RELEASE_VERSION}
