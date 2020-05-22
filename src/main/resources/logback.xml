@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <property name="LOGS" value="./logs/realestate" />
+    <property name="LOGS" value="/opt/realestate/logs" />
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
