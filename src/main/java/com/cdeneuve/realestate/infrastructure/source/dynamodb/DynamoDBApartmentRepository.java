@@ -41,7 +41,7 @@ public class DynamoDBApartmentRepository implements ApartmentSource {
     }
 
     @Override
-    public boolean existsById(String id) {
+    public boolean existsByExtId(String id) {
         return table.getItem(new PrimaryKey(PRIMARY_PARTITION_KEY, id)) != null;
     }
 

@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Slf4j
-@Repository
+//@Repository
 @RequiredArgsConstructor
 public class MongoDBRepository implements ApartmentSource {
     private final MongoTemplate mongoTemplate;
@@ -25,7 +24,7 @@ public class MongoDBRepository implements ApartmentSource {
     }
 
     @Override
-    public boolean existsById(String id) {
+    public boolean existsByExtId(String id) {
         Query query = new Query(where("id").is(id));
         return mongoTemplate.exists(query, Apartment.class);
     }

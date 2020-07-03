@@ -30,13 +30,16 @@ public class SearchProcessor {
     public void processSearchResults(String htmlResultPage) {
         List<Apartment> apartments = apartmentParser.parseApartmentIdsFromHtml(htmlResultPage);
         List<Apartment> newApartments = apartments.stream()
-                .filter(apartment -> !apartmentSource.existsById(apartment.getId()))
+                .filter(apartment -> !apartmentSource.existsByExtId(apartment.getExtId()))
                 .collect(Collectors.toList());
+
         newApartments.forEach(apartment -> {
             apartmentSource.save(apartment);
             notificationManager.sendNotification(ApartmentNotification.newApartmentCreated(apartment));
         });
-        log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.stream().map(Apartment::getId).collect(toSet()));
+
+        log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.stream()
+                .map(Apartment::getId).collect(toSet()));
     }
 
 }

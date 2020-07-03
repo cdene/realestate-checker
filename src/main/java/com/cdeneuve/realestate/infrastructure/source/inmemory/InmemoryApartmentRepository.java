@@ -19,8 +19,8 @@ public class InmemoryApartmentRepository implements ApartmentSource {
 
     @Override
     public void save(Apartment apartment) {
-        if (!apartments.containsKey(apartment.getId())) {
-            apartments.put(apartment.getId(), apartment);
+        if (!apartments.containsKey(apartment.getExtId())) {
+            apartments.put(apartment.getExtId(), apartment);
             showAll();
         }
     }
@@ -38,7 +38,7 @@ public class InmemoryApartmentRepository implements ApartmentSource {
     }
 
     @Override
-    public boolean existsById(String id) {
+    public boolean existsByExtId(String id) {
         return apartments.containsKey(id);
     }
 }
