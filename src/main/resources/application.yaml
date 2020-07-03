@@ -23,9 +23,7 @@ mongodb:
   user: realestate_admin
 
 ---
-spring:
-  profiles:
-    active: default
+spring.profiles: prod
 
 notifications:
   enabled: true
@@ -35,10 +33,20 @@ notifications:
   telegram:
     enabled: true
 
----
 spring:
-  profiles:
-    active: dev
+  jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:54030/realestate
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASS}
+
+logging:
+  config: classpath:logback-dev.xml
+
+---
+spring.profiles: dev
 
 notifications:
   enabled: true
@@ -47,3 +55,14 @@ notifications:
     silenceInterval: 5
   telegram:
     enabled: false
+spring:
+  jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:54030/realestate
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASS}
+
+logging:
+  config: classpath:logback-dev.xml

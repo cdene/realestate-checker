@@ -8,7 +8,7 @@ public interface ApartmentSource {
 
     Optional<Apartment> getById(String id);
 
-    boolean existsById(String id);
+    boolean existsByExtId(String extId);
 
     void save(Apartment apartment);
 

@@ -2,8 +2,6 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <property name="LOGS" value="/opt/realestate/logs" />
-
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -13,8 +11,8 @@
         </layout>
     </appender>
 
-    <root level="warn">
-        <appender-ref ref="Console" />
+    <root level="info">
+        <appender-ref ref="Console"/>
     </root>
 
 </configuration>

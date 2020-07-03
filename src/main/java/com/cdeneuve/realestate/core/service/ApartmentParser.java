@@ -56,7 +56,7 @@ public class ApartmentParser {
         }
     }
 
-    private Optional<Apartment> parseApartmentDetails(String apartmentId, Element apartmentElement) throws ApartmentDetailsParsingException {
+    private Optional<Apartment> parseApartmentDetails(String externalId, Element apartmentElement) throws ApartmentDetailsParsingException {
         Element apartmentDataElement = apartmentElement.getElementsByClass("result-list-entry__data").get(0);
         String title = parseTitle(apartmentDataElement);
         String address = parseAddress(apartmentDataElement);
@@ -64,7 +64,7 @@ public class ApartmentParser {
 
         return Optional.of(
                 Apartment.builder()
-                        .id(apartmentId)
+                        .extId(externalId)
                         .title(title)
                         .address(address)
                         .price(details.getPrice())

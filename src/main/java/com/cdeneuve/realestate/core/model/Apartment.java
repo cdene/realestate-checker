@@ -13,7 +13,8 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 @JsonDeserialize(builder = Apartment.ApartmentBuilder.class)
 public class Apartment {
-    private final String id;
+    private final Long id;
+    private final String extId;
     private final String title;
     private final String address;
     private final BigDecimal price;
@@ -22,8 +23,10 @@ public class Apartment {
     private final List<String> tags;
     private final LocalDateTime timestamp;
 
-    Apartment(String id, String title, String address, BigDecimal price, BigDecimal area, BigDecimal rooms, List<String> tags, LocalDateTime timestamp) {
+    Apartment(Long id, String extId, String title, String address, BigDecimal price, BigDecimal area,
+              BigDecimal rooms, List<String> tags, LocalDateTime timestamp) {
         this.id = id;
+        this.extId = extId;
         this.title = title;
         this.address = address;
         this.price = price;
