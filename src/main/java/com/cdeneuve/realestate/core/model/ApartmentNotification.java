@@ -1,7 +1,6 @@
 package com.cdeneuve.realestate.core.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.format.DateTimeFormatter;
 
@@ -12,7 +11,7 @@ public class ApartmentNotification implements Notification {
 
     public static Notification newApartmentCreated(Apartment apartment) {
         StringBuilder contentBuilder = new StringBuilder();
-        contentBuilder.append(apartment.getId())
+        contentBuilder.append(apartment.getExtId())
                 .append(" [")
                 .append(apartment.getTimestamp().format(DateTimeFormatter.ISO_DATE_TIME))
                 .append("]")
@@ -28,7 +27,7 @@ public class ApartmentNotification implements Notification {
                 .append(apartment.getArea())
                 .append("\n Tags")
                 .append(String.join(", ", apartment.getTags()))
-                .append("\n Link: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getId());
+                .append("\n Link: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getExtId());
         contentBuilder.append("\n\n\n");
         return ApartmentNotification.builder()
                 .title("1 new apartments added")
