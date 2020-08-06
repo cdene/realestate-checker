@@ -28,7 +28,7 @@ public class SearchProcessor {
     }
 
     public void processSearchResults(String htmlResultPage) {
-        List<Apartment> apartments = apartmentParser.parseApartmentIdsFromHtml(htmlResultPage);
+        List<Apartment> apartments = apartmentParser.parse(htmlResultPage);
         List<Apartment> newApartments = apartments.stream()
                 .filter(apartment -> !apartmentSource.existsByExtId(apartment.getExtId()))
                 .collect(Collectors.toList());

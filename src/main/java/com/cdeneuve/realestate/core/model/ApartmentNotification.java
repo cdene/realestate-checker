@@ -25,8 +25,6 @@ public class ApartmentNotification implements Notification {
                 .append(apartment.getRooms())
                 .append("\n Area: ")
                 .append(apartment.getArea())
-                .append("\n Tags")
-                .append(String.join(", ", apartment.getTags()))
                 .append("\n Link: ").append("https://www.immobilienscout24.de/expose/").append(apartment.getExtId());
         contentBuilder.append("\n\n\n");
         return ApartmentNotification.builder()

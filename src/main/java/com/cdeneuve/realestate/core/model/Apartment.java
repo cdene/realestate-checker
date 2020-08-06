@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @EqualsAndHashCode(of = "id")
+@ToString
 @JsonDeserialize(builder = Apartment.ApartmentBuilder.class)
 public class Apartment {
     private final Long id;
@@ -21,10 +22,11 @@ public class Apartment {
     private final BigDecimal area;
     private final BigDecimal rooms;
     private final List<String> tags;
+    private final String info;
     private final LocalDateTime timestamp;
 
     Apartment(Long id, String extId, String title, String address, BigDecimal price, BigDecimal area,
-              BigDecimal rooms, List<String> tags, LocalDateTime timestamp) {
+              BigDecimal rooms, List<String> tags, String info, LocalDateTime timestamp) {
         this.id = id;
         this.extId = extId;
         this.title = title;
@@ -33,6 +35,7 @@ public class Apartment {
         this.area = area;
         this.rooms = rooms;
         this.tags = tags;
+        this.info = info;
         this.timestamp = timestamp;
     }
 
@@ -43,7 +46,7 @@ public class Apartment {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("========================\n");
-        sb.append(getId())
+        sb.append(getExtId())
                 .append(" [").append(getTimestamp().format(DateTimeFormatter.ISO_DATE_TIME)).append("]")
                 .append("\n")
                 .append(title)
@@ -55,9 +58,7 @@ public class Apartment {
                 .append(getRooms())
                 .append("\nArea: ")
                 .append(getArea())
-                .append("\nTags")
-                .append(String.join(", ", getTags()))
-                .append("\nLink: ").append("https://www.immobilienscout24.de/expose/").append(getId());
+                .append("\nLink: ").append("https://www.immobilienscout24.de/expose/").append(getExtId());
         return sb.toString();
     }
 
