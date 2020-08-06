@@ -6,7 +6,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Getter
 @Setter
@@ -37,6 +36,8 @@ public class ApartmentEntity {
     private String tags;
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
+    @Column(name = "extra_info")
+    private String info;
 
     public static ApartmentEntity mapToEntity(Apartment apartment) {
         ApartmentEntity entity = new ApartmentEntity();
@@ -47,7 +48,7 @@ public class ApartmentEntity {
         entity.setPrice(apartment.getPrice());
         entity.setArea(apartment.getArea());
         entity.setRooms(apartment.getRooms());
-        entity.setTags(String.join(" ", apartment.getTags()));
+        entity.setInfo(apartment.getInfo());
         entity.setTimestamp(apartment.getTimestamp());
         return entity;
     }
@@ -61,8 +62,8 @@ public class ApartmentEntity {
                 .price(price)
                 .area(area)
                 .rooms(rooms)
-                .tags(Arrays.asList(tags.split(" ")))
                 .timestamp(timestamp)
+                .info(getInfo())
                 .build();
     }
 }

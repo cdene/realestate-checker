@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
@@ -14,6 +15,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Service
 public class SearchProcessor {
+    private final ExecutorService executorService = Executors.newFixedThreadPool(200);
 
     private final ApartmentParser apartmentParser;
 
@@ -28,18 +30,18 @@ public class SearchProcessor {
     }
 
     public void processSearchResults(String htmlResultPage) {
-        List<Apartment> apartments = apartmentParser.parseApartmentIdsFromHtml(htmlResultPage);
+        List<Apartment> apartments = apartmentParser.parse(htmlResultPage);
         List<Apartment> newApartments = apartments.stream()
                 .filter(apartment -> !apartmentSource.existsByExtId(apartment.getExtId()))
                 .collect(Collectors.toList());
 
-        newApartments.forEach(apartment -> {
+        newApartments.forEach(apartment -> executorService.submit(() -> {
             apartmentSource.save(apartment);
             notificationManager.sendNotification(ApartmentNotification.newApartmentCreated(apartment));
-        });
+        }));
 
         log.info("Received apartments: {}, new apartments: {}", apartments.size(), newApartments.stream()
-                .map(Apartment::getId).collect(toSet()));
+                .map(Apartment::getExtId).collect(toSet()));
     }
 
 }
