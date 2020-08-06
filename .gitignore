@@ -24,3 +24,5 @@ target/
 
 ### Mac files
 .DS_Store
+logs
+tdlib
