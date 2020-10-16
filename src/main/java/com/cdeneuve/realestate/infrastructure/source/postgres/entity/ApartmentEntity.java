@@ -26,6 +26,16 @@ public class ApartmentEntity {
     private String title;
     @Column(name = "address")
     private String address;
+    @Column(name = "zip_code")
+    private String zipCode;
+    @Column(name = "street")
+    private String street;
+    @Column(name = "district")
+    private String district;
+    @Column(name = "coord_lat")
+    private Double coordLat;
+    @Column(name = "coord_lon")
+    private Double coordLon;
     @Column(name = "price")
     private BigDecimal price;
     @Column(name = "area")
@@ -44,6 +54,11 @@ public class ApartmentEntity {
         entity.setId(apartment.getId());
         entity.setExtId(apartment.getExtId());
         entity.setTitle(apartment.getTitle());
+        entity.setZipCode(apartment.getZipCode());
+        entity.setStreet(apartment.getStreet());
+        entity.setDistrict(apartment.getDistrict());
+        entity.setCoordLat(apartment.getCoordLat());
+        entity.setCoordLon(apartment.getCoordLon());
         entity.setAddress(apartment.getAddress());
         entity.setPrice(apartment.getPrice());
         entity.setArea(apartment.getArea());
@@ -58,6 +73,11 @@ public class ApartmentEntity {
                 .id(id)
                 .extId(extId)
                 .title(title)
+                .zipCode(zipCode)
+                .street(street)
+                .district(district)
+                .coordLat(coordLat)
+                .coordLon(coordLon)
                 .address(address)
                 .price(price)
                 .area(area)
