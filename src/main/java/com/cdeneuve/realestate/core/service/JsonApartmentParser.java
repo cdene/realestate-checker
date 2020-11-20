@@ -1,16 +1,20 @@
 package com.cdeneuve.realestate.core.service;
 
 import com.cdeneuve.realestate.core.model.Apartment;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.stream.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -32,7 +36,7 @@ public class JsonApartmentParser implements ApartmentParser {
                             .extId(entry.get("realEstateId").asText())
                             .title(details.get("title").asText())
                             .area(new BigDecimal(details.get("livingSpace").asText()))
-                            .price(new BigDecimal(details.get("calculatedPrice").get("value").asText()))
+                            .price(new BigDecimal(details.path("calculatedTotalRent").path("totalRent").path("value").asText()))
                             .rooms(new BigDecimal(details.get("numberOfRooms").asText()))
                             .zipCode(details.path("address").path("postcode").asText())
                             .street(details.path("address").path("street").asText())
