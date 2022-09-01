@@ -21,7 +21,7 @@
     </parent>
     <properties>
         <aws.sdk.version>1.11.658</aws.sdk.version>
-        <jsoup.version>1.14.2</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
         <sendgrid.version>4.0.1</sendgrid.version>
         <telegrambots.version>4.4.0.1</telegrambots.version>
     </properties>
